@@ -207,8 +207,6 @@ function App() {
     const [columnIndex, setColumnIndex] = useState<number>(0);
     const [disabled, setDisabled] = useState<string[]>([]);
 
-    console.log(equationExpected);
-
     useEffect(() => {
         const handleKeyDown = (e: { key: string }) => {
             let input = "";
