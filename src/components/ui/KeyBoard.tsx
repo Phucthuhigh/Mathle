@@ -110,9 +110,7 @@ const KeyBoard = ({
                 prevState.filter((item) => item !== "D")
             );
         }
-    }, [columnIndex, disabled]);
-
-    console.log(equationExpected);
+    }, [columnIndex]);
 
     const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
         const input = (e.target as HTMLElement).getAttribute("name");
@@ -174,8 +172,7 @@ const KeyBoard = ({
 
                         const stringOutput = leftEquation + rightEquation;
                         const stringExpected =
-                            equationExpected.leftEquation +
-                            equationExpected.rightEquation;
+                            equationExpected.left + equationExpected.right;
 
                         for (let i = 0; i < stringOutput.length; i++) {
                             if (stringOutput[i] === stringExpected[i]) {

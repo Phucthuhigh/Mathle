@@ -1,35 +1,35 @@
-function getRndInteger(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+function randRange(lower: number, upper = 0) {
+    if (lower > upper) [upper, lower] = [lower, upper];
+    return Math.floor(Math.random() * (upper - lower + 1)) + lower;
 }
 
-const operators = ["+", "-"];
+const pickArray = <T>(arr: T[]): T =>
+    arr[randRange(arr.length * 10) % arr.length];
 
-function getEquation() {
-    const a = getRndInteger(0, 999);
-    const operator = operators[getRndInteger(0, 1)];
-    let b;
-    const lenB = 4 - a.toString().length;
-    if (operator == "+") {
-        b = getRndInteger(0, Math.min(10 ** lenB - 1, 999 - a));
-        let leftEquation = a.toString() + operator + b.toString();
-        while (leftEquation.length < 5) leftEquation = "0" + leftEquation;
-        let rightEquation = (a + b).toString();
-        while (rightEquation.length < 3) rightEquation = "0" + rightEquation;
-        return {
-            leftEquation,
-            rightEquation,
-        };
-    } else {
-        b = getRndInteger(Math.max(a - 999, 0), Math.min(a, 10 ** lenB - 1));
-        let leftEquation = a.toString() + operator + b.toString();
-        while (leftEquation.length < 5) leftEquation = "0" + leftEquation;
-        let rightEquation = (a - b).toString();
-        while (rightEquation.length < 3) rightEquation = "0" + rightEquation;
-        return {
-            leftEquation,
-            rightEquation,
-        };
-    }
-}
+const getEquation = () => {
+    let firstNum = randRange(0, 10 ** ((randRange(0, 12) % 3) + 1) - 1);
+    let secondNum = Math.min(
+        999 - firstNum,
+        randRange(
+            10 ** (4 - firstNum.toString().length) - 2,
+            10 ** (4 - firstNum.toString().length) - 1
+        )
+    );
+    const operator = pickArray(["+", "-"] as const);
+
+    if (operator === "-" && firstNum < secondNum)
+        [firstNum, secondNum] = [secondNum, firstNum];
+
+    const left = `${firstNum}${operator}${secondNum}`;
+    const right = (
+        operator === "-"
+            ? Math.max(firstNum, secondNum) - Math.min(firstNum, secondNum)
+            : firstNum + secondNum
+    )
+        .toString()
+        .padStart(3, "0");
+
+    return { left, right };
+};
 
 export default getEquation;
