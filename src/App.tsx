@@ -200,13 +200,14 @@ const initialState: Array<Row> = [
     },
 ];
 
+const equationExpected = getEquation();
 function App() {
     const [screenArray, setScreenArray] = useState<Array<Row>>(initialState);
     const [rowIndex, setRowIndex] = useState<number>(0);
     const [columnIndex, setColumnIndex] = useState<number>(0);
     const [disabled, setDisabled] = useState<string[]>([]);
 
-    const equationExpected = getEquation();
+    console.log(equationExpected);
 
     useEffect(() => {
         const handleKeyDown = (e: { key: string }) => {
@@ -217,6 +218,7 @@ function App() {
                 [
                     "+",
                     "-",
+                    "0",
                     "1",
                     "2",
                     "3",
@@ -247,7 +249,7 @@ function App() {
         };
         document.addEventListener("keydown", handleKeyDown);
         return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [columnIndex, disabled, equationExpected, rowIndex, screenArray]);
+    }, [columnIndex, disabled, rowIndex, screenArray]);
 
     return (
         <div className="flex justify-center h-screen">

@@ -4,6 +4,28 @@ import { buttonNames } from "@/constants";
 
 const mexp = new Mexp();
 
+const genColors = (answer: string, response: string) => {
+    const output: number[] = Array(8).fill(1);
+    const chars = response.split("").map((e, i) => [e, i] as const);
+
+    for (const [, i] of chars.filter(([c, i]) => answer[i] === c)) {
+        output[i] = 3;
+        answer = answer.slice(0, i) + "x" + answer.slice(i + 1);
+    }
+
+    for (const [char, i] of chars.filter(
+        ([c, i]) => answer[i] !== c && answer[i] !== "x"
+    )) {
+        if (answer.includes(char)) {
+            output[i] = 2;
+            const ind = answer.indexOf(char);
+            answer = answer.slice(0, ind) + "x" + answer.slice(ind + 1);
+        }
+    }
+
+    return output;
+};
+
 const handlePlayGame = (
     equationExpected: { left: string; right: string },
     input: string,
@@ -55,72 +77,22 @@ const handlePlayGame = (
                         return;
                     }
 
-                    const visit: boolean[] = [
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false,
-                    ];
-
-                    const rowResult: (0 | 1 | 2 | 3)[] = [
-                        0, 0, 0, 0, 0, 0, 0, 0,
-                    ];
-
                     const stringOutput = leftEquation + rightEquation;
                     const stringExpected =
                         equationExpected.left + equationExpected.right;
 
-                    for (let i = 0; i < stringOutput.length; i++) {
-                        if (stringOutput[i] === stringExpected[i]) {
-                            rowResult[i] = 3;
-                            visit[i] = true;
-                        }
-                    }
-
-                    for (let i = 0; i < stringOutput.length; i++) {
-                        if (rowResult[i] === 3 && visit[i]) continue;
-                        for (let j = 0; j < stringExpected.length; j++) {
-                            if (
-                                !visit[j] &&
-                                stringOutput[i] === stringExpected[j]
-                            ) {
-                                rowResult[i] = 2;
-                                visit[j] = true;
-                                break;
-                            }
-                        }
-                        if (rowResult[i] === 0) {
-                            rowResult[i] = 1;
-                        }
-                    }
+                    const rowResult = genColors(stringExpected, stringOutput);
 
                     for (let i = 0; i < rowResult.length; i++) {
                         if (i >= 5)
                             updatedScreenArray[rowIndex].right[i - 5].state =
-                                rowResult[i];
+                                rowResult[i] as 0 | 1 | 2 | 3;
                         else
                             updatedScreenArray[rowIndex].left[i].state =
-                                rowResult[i];
+                                rowResult[i] as 0 | 1 | 2 | 3;
                     }
 
                     let newDisabled = [...disabled];
-                    for (let i = 0; i < rowResult.length; i++) {
-                        let ok: boolean = true;
-                        for (let j = 0; j < rowResult.length; j++) {
-                            if (
-                                stringOutput[i] === stringOutput[j] &&
-                                rowResult[j] !== 1
-                            ) {
-                                ok = false;
-                                break;
-                            }
-                        }
-                        if (ok) newDisabled.push(stringOutput[i]);
-                    }
 
                     let checkAccepted = true;
                     for (let i = 0; i < rowResult.length; i++) {
