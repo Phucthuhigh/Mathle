@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import KeyBoard from "./components/ui/KeyBoard";
 import Screen from "./components/ui/Screen";
 import { Separator } from "./components/ui/separator";
 import { Row } from "./types";
+import getEquation from "./utils/getEquation";
+import handlePlayGame from "./utils/handlePlayGame";
 
 const initialState: Array<Row> = [
     {
@@ -202,6 +204,50 @@ function App() {
     const [screenArray, setScreenArray] = useState<Array<Row>>(initialState);
     const [rowIndex, setRowIndex] = useState<number>(0);
     const [columnIndex, setColumnIndex] = useState<number>(0);
+    const [disabled, setDisabled] = useState<string[]>([]);
+
+    const equationExpected = getEquation();
+
+    useEffect(() => {
+        const handleKeyDown = (e: { key: string }) => {
+            let input = "";
+            if (e.key === "Enter") input = "=";
+            else if (e.key === "Backspace" || e.key === "Delete") input = "D";
+            else if (
+                [
+                    "+",
+                    "-",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                ].includes(e.key)
+            )
+                input = e.key;
+
+            // console.log(e.key);
+            if (input !== "")
+                handlePlayGame(
+                    equationExpected,
+                    input as string,
+                    screenArray,
+                    setScreenArray,
+                    rowIndex,
+                    setRowIndex,
+                    columnIndex,
+                    setColumnIndex,
+                    disabled,
+                    setDisabled
+                );
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [columnIndex, disabled, equationExpected, rowIndex, screenArray]);
 
     return (
         <div className="flex justify-center h-screen">
@@ -216,6 +262,9 @@ function App() {
                     setRowIndex={setRowIndex}
                     columnIndex={columnIndex}
                     setColumnIndex={setColumnIndex}
+                    equationExpected={equationExpected}
+                    disabled={disabled}
+                    setDisabled={setDisabled}
                 />
             </div>
         </div>
