@@ -252,7 +252,7 @@ function App() {
     return (
         <div className="flex justify-center h-screen">
             <div className="max-w-[400px] w-full flex items-center flex-col">
-                <span className="text-3xl font-medium">MATHLE BY 2SG TIN</span>
+                <span className="text-3xl font-medium">MATHLE by Tổ Toán TDN</span>
                 <Separator />
                 <Screen screenArray={screenArray} />
                 <KeyBoard
